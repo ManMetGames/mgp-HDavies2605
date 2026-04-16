@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "MGP_2526Character.generated.h"
 
+
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
@@ -49,6 +50,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* SprintAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ZoomAction;
+
 public:
 
 	/** Constructor */
@@ -58,6 +65,8 @@ protected:
 
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual void BeginPlay() override;
 
 protected:
 
@@ -84,6 +93,18 @@ public:
 	/** Handles jump pressed inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
+
+	/** Checks the direction the player is heading while moving **/
+	void CheckDirection();
+
+	/** Called when sprint starts **/
+	void StartSprint();
+
+	/** Called when sprint ends **/
+	void EndSprint();
+
+	float maxWalkSpeed;
+	float maxRunSpeed;
 
 public:
 

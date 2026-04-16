@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "MGP_2526.h"
+#include "KismetAnimationLibrary.h"
 
 AMGP_2526Character::AMGP_2526Character()
 {
@@ -50,6 +51,18 @@ AMGP_2526Character::AMGP_2526Character()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AMGP_2526Character::BeginPlay() 
+{
+	Super::BeginPlay();
+
+	//This gets the max walk speed from the blueprint file, stores it and then creates the run speed based on it. Makes it easier to edit the speed.
+	maxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	maxRunSpeed = maxWalkSpeed * 1.2f;
+
+	//Stores default camera socket offset vector
+
+}
+
 void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
@@ -65,6 +78,10 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Look);
+
+		// Sprinting
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AMGP_2526Character::StartSprint);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AMGP_2526Character::EndSprint);
 	}
 	else
 	{
@@ -107,7 +124,29 @@ void AMGP_2526Character::DoMove(float Right, float Forward)
 		// add movement 
 		AddMovementInput(ForwardDirection, Forward);
 		AddMovementInput(RightDirection, Right);
+		CheckDirection();
 	}
+}
+
+void AMGP_2526Character::CheckDirection() 
+{
+	FVector v = GetVelocity();
+	FRotator r = GetActorRotation();
+
+	float MovementDirection = UKismetAnimationLibrary::CalculateDirection(v, r); //this works, despite VS22s protests;
+	//UE_LOG(LogTemp, Warning, TEXT("%f"),MovementDirection); //test, remove later. 
+}
+
+void AMGP_2526Character::StartSprint() 
+{
+	this->GetCharacterMovement()->MaxWalkSpeed = maxRunSpeed;
+	UE_LOG(LogTemp, Warning, TEXT("%f"), this->GetCharacterMovement()->MaxWalkSpeed);
+}
+
+void AMGP_2526Character::EndSprint()
+{
+	this->GetCharacterMovement()->MaxWalkSpeed = maxWalkSpeed;
+	UE_LOG(LogTemp, Warning, TEXT("%f"), this->GetCharacterMovement()->MaxWalkSpeed);
 }
 
 void AMGP_2526Character::DoLook(float Yaw, float Pitch)
