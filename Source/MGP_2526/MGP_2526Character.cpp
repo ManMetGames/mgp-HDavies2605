@@ -12,6 +12,7 @@
 #include "InputActionValue.h"
 #include "MGP_2526.h"
 #include "KismetAnimationLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AMGP_2526Character::AMGP_2526Character()
 {
@@ -57,7 +58,7 @@ void AMGP_2526Character::BeginPlay()
 
 	//This gets the max walk speed from the blueprint file, stores it and then creates the run speed based on it. Makes it easier to edit the speed.
 	maxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
-	maxRunSpeed = maxWalkSpeed * 1.2f;
+	maxRunSpeed = maxWalkSpeed * 1.5f;
 
 	//Stores default camera socket offset vector
 
@@ -128,13 +129,43 @@ void AMGP_2526Character::DoMove(float Right, float Forward)
 	}
 }
 
-void AMGP_2526Character::CheckDirection() 
+void AMGP_2526Character::FindMovementSpeed() 
+{
+	// Implement a "current walk speed" that can be augmented (walk/run speed with a multiplier based on the direction). Update MaxWalkSpeed at the end of the function.
+}
+
+enum AMGP_2526Character::dir 
+{
+	F,
+	S,
+	B,
+};
+
+dir AMGP_2526Character::CheckDirection() 
 {
 	FVector v = GetVelocity();
 	FRotator r = GetActorRotation();
 
-	float MovementDirection = UKismetAnimationLibrary::CalculateDirection(v, r); //this works, despite VS22s protests;
-	//UE_LOG(LogTemp, Warning, TEXT("%f"),MovementDirection); //test, remove later. 
+	float MovementDirection = UKismetAnimationLibrary::CalculateDirection(v, r);
+	float AbsMovDir = abs(MovementDirection);
+	UE_LOG(LogTemp, Warning, TEXT("%f"),MovementDirection);
+
+	if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 0, 45, true, true)) //0 is forwards, so this is within 30 degrees either way of that
+	{
+		return F;
+	}
+	else if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 45, 135, false, true))
+	{
+		return S;
+	}
+	else if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 135, 180, false, true)) 
+	{
+		return B;
+	}
+	else 
+	{
+		return F; //If we -for some reason- fail to find a dir, just keep the player at default speed
+	}
 }
 
 void AMGP_2526Character::StartSprint() 

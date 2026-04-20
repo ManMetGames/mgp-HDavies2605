@@ -76,6 +76,15 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	/** Called whenever move is to find what speed to move at **/
+	void FindMovementSpeed();
+
+	bool isSprinting = false; //ist falsch
+
+	enum dir;
+
+	
+
 public:
 
 	/** Handles move inputs from either controls or UI interfaces */
@@ -95,7 +104,7 @@ public:
 	virtual void DoJumpEnd();
 
 	/** Checks the direction the player is heading while moving **/
-	void CheckDirection();
+	dir CheckDirection();
 
 	/** Called when sprint starts **/
 	void StartSprint();
@@ -105,6 +114,12 @@ public:
 
 	float maxWalkSpeed;
 	float maxRunSpeed;
+
+	/**Called when Camera Zoom starts **/
+	void OnZoom();
+
+	/**Called when Camera Zoom ends **/
+	void EndZoom();
 
 public:
 
