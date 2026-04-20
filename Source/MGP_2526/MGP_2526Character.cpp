@@ -134,13 +134,6 @@ void AMGP_2526Character::FindMovementSpeed()
 	// Implement a "current walk speed" that can be augmented (walk/run speed with a multiplier based on the direction). Update MaxWalkSpeed at the end of the function.
 }
 
-enum AMGP_2526Character::dir 
-{
-	F,
-	S,
-	B,
-};
-
 dir AMGP_2526Character::CheckDirection() 
 {
 	FVector v = GetVelocity();

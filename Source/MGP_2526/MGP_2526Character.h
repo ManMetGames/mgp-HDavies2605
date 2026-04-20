@@ -81,7 +81,13 @@ protected:
 
 	bool isSprinting = false; //ist falsch
 
-	enum dir;
+	UENUM(BlueprintType)
+		enum class : int8 dir 
+	{
+		F UMETA(DisplayName = "Forward"),
+		S UMETA(DisplayName = "Sides"),
+		B UMETA(DisplayName = "Back"),
+	};
 
 	
 
