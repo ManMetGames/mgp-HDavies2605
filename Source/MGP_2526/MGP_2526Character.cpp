@@ -118,16 +118,34 @@ void AMGP_2526Character::DoMove(float Right, float Forward)
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
+		FindMovementSpeed();
+
 		// add movement 
 		AddMovementInput(ForwardDirection, Forward);
 		AddMovementInput(RightDirection, Right);
-		CheckDirection();
 	}
 }
 
 void AMGP_2526Character::FindMovementSpeed() 
 {
 	// Implement a "current walk speed" that can be augmented (walk/run speed with a multiplier based on the direction). Update MaxWalkSpeed at the end of the function.
+	EDir dir = CheckDirection();
+	float currentWalkSpeed = maxWalkSpeed;
+
+	if (dir == EDir::For) 
+	{
+		currentWalkSpeed *= 1;
+	}
+	else if (dir == EDir::Sid)
+	{
+		currentWalkSpeed *= 0.75;
+	}
+	else if (dir == EDir::Bac)
+	{
+		currentWalkSpeed *= 0.5;
+	}
+
+	this->GetCharacterMovement()->MaxWalkSpeed = currentWalkSpeed;
 }
 
 EDir AMGP_2526Character::CheckDirection() 

@@ -83,7 +83,9 @@ protected:
 	/** Called whenever move is to find what speed to move at **/
 	void FindMovementSpeed();
 
-	bool isSprinting = false; //ist falsch
+	bool bIsSprinting = false; //ist falsch
+
+	bool bCanSprint = false;
 
 	
 
@@ -106,7 +108,10 @@ public:
 	/** Called when sprint ends **/
 	void EndSprint();
 
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
 	float maxWalkSpeed;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
 	float maxRunSpeed;
 
 	/**Called when Camera Zoom starts **/
