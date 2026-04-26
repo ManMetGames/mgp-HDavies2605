@@ -15,6 +15,14 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
+UENUM(BlueprintType)
+enum class EDir : uint8
+{
+	For UMETA(DisplayName = "Forward"),
+	Sid UMETA(DisplayName = "Sides"),
+	Bac UMETA(DisplayName = "Back"),
+};
+
 /**
  *  A simple player-controllable third person character
  *  Implements a controllable orbiting camera
@@ -33,10 +41,6 @@ class AMGP_2526Character : public ACharacter
 	UCameraComponent* FollowCamera;
 	
 protected:
-
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, Category="Input")
-	UInputAction* JumpAction;
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -81,14 +85,6 @@ protected:
 
 	bool isSprinting = false; //ist falsch
 
-	UENUM(BlueprintType)
-		enum class : int8 dir 
-	{
-		F UMETA(DisplayName = "Forward"),
-		S UMETA(DisplayName = "Sides"),
-		B UMETA(DisplayName = "Back"),
-	};
-
 	
 
 public:
@@ -101,16 +97,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoLook(float Yaw, float Pitch);
 
-	/** Handles jump pressed inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpStart();
-
-	/** Handles jump pressed inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpEnd();
-
 	/** Checks the direction the player is heading while moving **/
-	dir CheckDirection();
+	EDir CheckDirection();
 
 	/** Called when sprint starts **/
 	void StartSprint();

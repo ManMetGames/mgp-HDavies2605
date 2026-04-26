@@ -68,10 +68,6 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Move);
@@ -134,7 +130,7 @@ void AMGP_2526Character::FindMovementSpeed()
 	// Implement a "current walk speed" that can be augmented (walk/run speed with a multiplier based on the direction). Update MaxWalkSpeed at the end of the function.
 }
 
-dir AMGP_2526Character::CheckDirection() 
+EDir AMGP_2526Character::CheckDirection() 
 {
 	FVector v = GetVelocity();
 	FRotator r = GetActorRotation();
@@ -145,19 +141,19 @@ dir AMGP_2526Character::CheckDirection()
 
 	if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 0, 45, true, true)) //0 is forwards, so this is within 30 degrees either way of that
 	{
-		return F;
+		return EDir::For;
 	}
 	else if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 45, 135, false, true))
 	{
-		return S;
+		return EDir::Sid;
 	}
 	else if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 135, 180, false, true)) 
 	{
-		return B;
+		return EDir::Bac;
 	}
 	else 
 	{
-		return F; //If we -for some reason- fail to find a dir, just keep the player at default speed
+		return EDir::For; //If we -for some reason- fail to find a dir, just keep the player at default speed
 	}
 }
 
@@ -173,6 +169,9 @@ void AMGP_2526Character::EndSprint()
 	UE_LOG(LogTemp, Warning, TEXT("%f"), this->GetCharacterMovement()->MaxWalkSpeed);
 }
 
+
+
+
 void AMGP_2526Character::DoLook(float Yaw, float Pitch)
 {
 	if (GetController() != nullptr)
@@ -183,14 +182,5 @@ void AMGP_2526Character::DoLook(float Yaw, float Pitch)
 	}
 }
 
-void AMGP_2526Character::DoJumpStart()
-{
-	// signal the character to jump
-	Jump();
-}
-
-void AMGP_2526Character::DoJumpEnd()
-{
-	// signal the character to stop jumping
-	StopJumping();
-}
+void AMGP_2526Character::OnZoom() {}
+void AMGP_2526Character::EndZoom() {}
