@@ -79,6 +79,10 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		// Sprinting
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AMGP_2526Character::StartSprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AMGP_2526Character::EndSprint);
+
+		// Crouching
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AMGP_2526Character::StartCrouch);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMGP_2526Character::EndCrouch);
 	}
 	else
 	{
@@ -187,7 +191,14 @@ void AMGP_2526Character::EndSprint()
 	UE_LOG(LogTemp, Warning, TEXT("%f"), this->GetCharacterMovement()->MaxWalkSpeed);
 }
 
-
+void AMGP_2526Character::StartCrouch() 
+{
+	GetCharacterMovement()->bWantsToCrouch = true;
+}
+void AMGP_2526Character::EndCrouch() 
+{
+	GetCharacterMovement()->bWantsToCrouch = false;
+}
 
 
 void AMGP_2526Character::DoLook(float Yaw, float Pitch)

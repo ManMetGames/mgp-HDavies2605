@@ -60,6 +60,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* ZoomAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* CrouchAction;
+
 public:
 
 	/** Constructor */
@@ -107,6 +110,13 @@ public:
 
 	/** Called when sprint ends **/
 	void EndSprint();
+
+	/** Called when Crouch begins **/
+	UFUNCTION()
+	void StartCrouch();
+
+	UFUNCTION()
+	void EndCrouch();
 
 	UPROPERTY(BlueprintReadWrite, Category = "Movement")
 	float maxWalkSpeed;
