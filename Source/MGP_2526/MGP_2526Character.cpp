@@ -60,6 +60,9 @@ void AMGP_2526Character::BeginPlay()
 	maxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 	maxRunSpeed = maxWalkSpeed * 1.5f;
 
+	defaultSocketOffset = CameraBoom->SocketOffset;
+	defaultFieldOfView = FollowCamera->FieldOfView;
+
 	//Stores default camera socket offset vector
 
 }

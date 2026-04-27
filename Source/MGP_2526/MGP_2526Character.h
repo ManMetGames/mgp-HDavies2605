@@ -132,6 +132,12 @@ public:
 
 	bool bIsZoomed;
 
+
+	//camera variables
+
+	FVector defaultSocketOffset;
+	float defaultFieldOfView;
+
 public:
 
 	/** Returns CameraBoom subobject **/
