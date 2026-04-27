@@ -83,6 +83,10 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		// Crouching
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AMGP_2526Character::StartCrouch);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMGP_2526Character::EndCrouch);
+
+		//Zoom
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Started, this, &AMGP_2526Character::OnZoom);
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Completed, this, &AMGP_2526Character::EndZoom);
 	}
 	else
 	{
@@ -138,7 +142,14 @@ void AMGP_2526Character::FindMovementSpeed()
 
 	if (dir == EDir::For) 
 	{
-		currentWalkSpeed *= 1;
+		if (bIsSprinting) 
+		{
+			currentWalkSpeed *= 1.5;
+		}
+		else 
+		{
+			currentWalkSpeed *= 1;
+		}
 	}
 	else if (dir == EDir::Sid)
 	{
@@ -181,13 +192,13 @@ EDir AMGP_2526Character::CheckDirection()
 
 void AMGP_2526Character::StartSprint() 
 {
-	this->GetCharacterMovement()->MaxWalkSpeed = maxRunSpeed;
+	bIsSprinting = true;
 	UE_LOG(LogTemp, Warning, TEXT("%f"), this->GetCharacterMovement()->MaxWalkSpeed);
 }
 
 void AMGP_2526Character::EndSprint()
 {
-	this->GetCharacterMovement()->MaxWalkSpeed = maxWalkSpeed;
+	bIsSprinting = false;
 	UE_LOG(LogTemp, Warning, TEXT("%f"), this->GetCharacterMovement()->MaxWalkSpeed);
 }
 
@@ -211,5 +222,11 @@ void AMGP_2526Character::DoLook(float Yaw, float Pitch)
 	}
 }
 
-void AMGP_2526Character::OnZoom() {}
-void AMGP_2526Character::EndZoom() {}
+void AMGP_2526Character::OnZoom() 
+{
+	bIsZoomed = true;
+}
+void AMGP_2526Character::EndZoom() 
+{
+	bIsZoomed = false;
+}

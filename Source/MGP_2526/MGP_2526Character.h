@@ -130,6 +130,8 @@ public:
 	/**Called when Camera Zoom ends **/
 	void EndZoom();
 
+	bool bIsZoomed;
+
 public:
 
 	/** Returns CameraBoom subobject **/
