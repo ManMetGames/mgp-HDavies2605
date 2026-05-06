@@ -21,22 +21,29 @@ class MGP_2526_API UMGPCharacterMovementComponent : public UCharacterMovementCom
 public:
 
 	bool bWantsToSprint = false;
+	bool bWantsToParkour = false;
 
 	UMGPCharacterMovementComponent();
 
 	UPROPERTY(EditDefaultsOnly) float Sprint_MaxWalkSpeed;
 	UPROPERTY(EditDefaultsOnly) float Walk_MaxWalkSpeed;
 
+	UPROPERTY(EditDefaultsOnly) bool canZoom;
 	AActor* Owner;
 
 protected:
 	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
 
+	/**Find the movement speed modifier based on direction and determines if the player can sprint based on direction **/
 	float FindMovementSpeedMod();
 
+	/**Checks the direction the attached actor is moving and returns it as an EDir Enum (for, sid, bac) **/
 	EDir CheckDirection();
+
+	void ParkourFunc();
 
 private:
 	bool bCanSprint = false;
 	float currentWalkSpeed = 0.0f;
+	bool bCanParkour = true;
 };

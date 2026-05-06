@@ -85,6 +85,10 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AMGP_2526Character::StartCrouch);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMGP_2526Character::EndCrouch);
 
+		//Vaulting
+		EnhancedInputComponent->BindAction(VaultAction, ETriggerEvent::Started, this, &AMGP_2526Character::StartVault);
+		EnhancedInputComponent->BindAction(VaultAction, ETriggerEvent::Completed, this, &AMGP_2526Character::EndVault);
+
 		//Zoom
 		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Started, this, &AMGP_2526Character::OnZoom);
 		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Completed, this, &AMGP_2526Character::EndZoom);
@@ -170,4 +174,12 @@ void AMGP_2526Character::OnZoom()
 void AMGP_2526Character::EndZoom() 
 {
 	bIsZoomed = false;
+}
+
+void AMGP_2526Character::StartVault()
+{
+}
+
+void AMGP_2526Character::EndVault()
+{
 }

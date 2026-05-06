@@ -59,6 +59,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* CrouchAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* VaultAction;
+
 public:
 
 	/** Constructor */
@@ -99,10 +102,9 @@ public:
 	void EndSprint();
 
 	/** Called when Crouch begins **/
-	UFUNCTION()
 	void StartCrouch();
 
-	UFUNCTION()
+	/**Called when Crouch ends **/
 	void EndCrouch();
 
 	/**Called when Camera Zoom starts **/
@@ -113,6 +115,11 @@ public:
 
 	bool bIsZoomed;
 
+	/** Called when Vault begins **/
+	void StartVault();
+
+	/**Called when Vault ends **/
+	void EndVault();
 
 	//camera variables
 
