@@ -13,15 +13,9 @@
 #include "MGP_2526.h"
 #include "KismetAnimationLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Custom3DCMC.h"
 
-//changes default sub-object of the CMC to custom CMC
-AMGP_2526Character::AMGP_2526Character(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UCustom3DCMC>(ACharacter::CharacterMovementComponentName))
+AMGP_2526Character::AMGP_2526Character()
 {
-
-	Custom3DCMC = Cast<UCustom3DCMC>(GetCharacterMovement());
-
-
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
@@ -62,8 +56,15 @@ void AMGP_2526Character::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//This gets the max walk speed from the blueprint file, stores it and then creates the run speed based on it. Makes it easier to edit the speed.
+	maxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	maxRunSpeed = maxWalkSpeed * 1.5f;
+
 	defaultSocketOffset = CameraBoom->SocketOffset;
 	defaultFieldOfView = FollowCamera->FieldOfView;
+
+	//Stores default camera socket offset vector
+
 }
 
 void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -93,33 +94,6 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	else
 	{
 		UE_LOG(LogMGP_2526, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
-	}
-}
-
-EDir AMGP_2526Character::CheckDirection()
-{
-	FVector v = GetVelocity();
-	FRotator r = GetActorRotation();
-
-	float MovementDirection = UKismetAnimationLibrary::CalculateDirection(v, r);
-	float AbsMovDir = abs(MovementDirection);
-	UE_LOG(LogTemp, Warning, TEXT("%f"), MovementDirection);
-
-	if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 0, 45, true, true)) //0 is forwards, so this is within 30 degrees either way of that
-	{
-		return EDir::For;
-	}
-	else if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 45, 135, false, true))
-	{
-		return EDir::Sid;
-	}
-	else if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 135, 180, false, true))
-	{
-		return EDir::Bac;
-	}
-	else
-	{
-		return EDir::For; //If we -for some reason- fail to find a dir, just keep the player at default speed
 	}
 }
 
@@ -167,11 +141,18 @@ void AMGP_2526Character::FindMovementSpeed()
 {
 	// Implement a "current walk speed" that can be augmented (walk/run speed with a multiplier based on the direction). Update MaxWalkSpeed at the end of the function.
 	EDir dir = CheckDirection();
-	float currentWalkSpeed = Custom3DCMC->Walk_MaxWalkSpeed;
+	float currentWalkSpeed = maxWalkSpeed;
 
 	if (dir == EDir::For) 
 	{
+		if (bIsSprinting) 
+		{
+			currentWalkSpeed *= 1.5;
+		}
+		else 
+		{
 			currentWalkSpeed *= 1;
+		}
 	}
 	else if (dir == EDir::Sid)
 	{
@@ -182,23 +163,46 @@ void AMGP_2526Character::FindMovementSpeed()
 		currentWalkSpeed *= 0.5;
 	}
 
-	//this->GetCharacterMovement()->MaxWalkSpeed = currentWalkSpeed;
+	this->GetCharacterMovement()->MaxWalkSpeed = currentWalkSpeed;
+}
+
+EDir AMGP_2526Character::CheckDirection() 
+{
+	FVector v = GetVelocity();
+	FRotator r = GetActorRotation();
+
+	float MovementDirection = UKismetAnimationLibrary::CalculateDirection(v, r);
+	float AbsMovDir = abs(MovementDirection);
+	UE_LOG(LogTemp, Warning, TEXT("%f"),MovementDirection);
+
+	if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 0, 45, true, true)) //0 is forwards, so this is within 30 degrees either way of that
+	{
+		return EDir::For;
+	}
+	else if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 45, 135, false, true))
+	{
+		return EDir::Sid;
+	}
+	else if (UKismetMathLibrary::InRange_FloatFloat(AbsMovDir, 135, 180, false, true)) 
+	{
+		return EDir::Bac;
+	}
+	else 
+	{
+		return EDir::For; //If we -for some reason- fail to find a dir, just keep the player at default speed
+	}
 }
 
 void AMGP_2526Character::StartSprint() 
 {
-	if (Custom3DCMC) 
-	{
-		Custom3DCMC->bWantsToSprint = true;
-	}
+	bIsSprinting = true;
+	UE_LOG(LogTemp, Warning, TEXT("%f"), this->GetCharacterMovement()->MaxWalkSpeed);
 }
 
 void AMGP_2526Character::EndSprint()
 {
-	if (Custom3DCMC)
-	{
-		Custom3DCMC->bWantsToSprint = false;
-	}
+	bIsSprinting = false;
+	UE_LOG(LogTemp, Warning, TEXT("%f"), this->GetCharacterMovement()->MaxWalkSpeed);
 }
 
 void AMGP_2526Character::StartCrouch() 
