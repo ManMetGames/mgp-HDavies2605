@@ -7,6 +7,13 @@
 #include "Logging/LogMacros.h"
 #include "MGP_2526Character.generated.h"
 
+UENUM(BlueprintType)
+enum class EDir : uint8
+{
+	For UMETA(DisplayName = "Forward"),
+	Sid UMETA(DisplayName = "Sides"),
+	Bac UMETA(DisplayName = "Back"),
+};
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -15,13 +22,7 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
-UENUM(BlueprintType)
-enum class EDir : uint8
-{
-	For UMETA(DisplayName = "Forward"),
-	Sid UMETA(DisplayName = "Sides"),
-	Bac UMETA(DisplayName = "Back"),
-};
+
 
 /**
  *  A simple player-controllable third person character
@@ -31,7 +32,10 @@ UCLASS(abstract)
 class AMGP_2526Character : public ACharacter
 {
 	GENERATED_BODY()
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) class UCustom3DCMC* Custom3DCMC; //reference to the new CMC
 
+private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -66,7 +70,7 @@ protected:
 public:
 
 	/** Constructor */
-	AMGP_2526Character();	
+	AMGP_2526Character(const FObjectInitializer& ObjectInitializer);	
 
 protected:
 
@@ -85,10 +89,6 @@ protected:
 
 	/** Called whenever move is to find what speed to move at **/
 	void FindMovementSpeed();
-
-	bool bIsSprinting = false; //ist falsch
-
-	bool bCanSprint = false;
 
 	
 
@@ -117,12 +117,6 @@ public:
 
 	UFUNCTION()
 	void EndCrouch();
-
-	UPROPERTY(BlueprintReadWrite, Category = "Movement")
-	float maxWalkSpeed;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Movement")
-	float maxRunSpeed;
 
 	/**Called when Camera Zoom starts **/
 	void OnZoom();
