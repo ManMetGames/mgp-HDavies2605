@@ -13,9 +13,12 @@
 #include "MGP_2526.h"
 #include "KismetAnimationLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "MGPCharacterMovementComponent.h"
 
-AMGP_2526Character::AMGP_2526Character()
+AMGP_2526Character::AMGP_2526Character(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UMGPCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
+	MGPCharacterMovementComponent = Cast<UMGPCharacterMovementComponent>(GetCharacterMovement());
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
@@ -32,7 +35,6 @@ AMGP_2526Character::AMGP_2526Character()
 	// instead of recompiling to adjust them
 	GetCharacterMovement()->JumpZVelocity = 500.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
@@ -55,10 +57,6 @@ AMGP_2526Character::AMGP_2526Character()
 void AMGP_2526Character::BeginPlay() 
 {
 	Super::BeginPlay();
-
-	//This gets the max walk speed from the blueprint file, stores it and then creates the run speed based on it. Makes it easier to edit the speed.
-	maxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
-	maxRunSpeed = maxWalkSpeed * 1.5f;
 
 	defaultSocketOffset = CameraBoom->SocketOffset;
 	defaultFieldOfView = FollowCamera->FieldOfView;
@@ -129,42 +127,40 @@ void AMGP_2526Character::DoMove(float Right, float Forward)
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		FindMovementSpeed();
-
 		// add movement 
 		AddMovementInput(ForwardDirection, Forward);
 		AddMovementInput(RightDirection, Right);
 	}
 }
-
-void AMGP_2526Character::FindMovementSpeed() 
-{
-	// Implement a "current walk speed" that can be augmented (walk/run speed with a multiplier based on the direction). Update MaxWalkSpeed at the end of the function.
-	EDir dir = CheckDirection();
-	float currentWalkSpeed = maxWalkSpeed;
-
-	if (dir == EDir::For) 
-	{
-		if (bIsSprinting) 
-		{
-			currentWalkSpeed *= 1.5;
-		}
-		else 
-		{
-			currentWalkSpeed *= 1;
-		}
-	}
-	else if (dir == EDir::Sid)
-	{
-		currentWalkSpeed *= 0.75;
-	}
-	else if (dir == EDir::Bac)
-	{
-		currentWalkSpeed *= 0.5;
-	}
-
-	this->GetCharacterMovement()->MaxWalkSpeed = currentWalkSpeed;
-}
+void AMGP_2526Character::FindMovementSpeed() {}
+//void AMGP_2526Character::FindMovementSpeed() 
+//{
+//	// Implement a "current walk speed" that can be augmented (walk/run speed with a multiplier based on the direction). Update MaxWalkSpeed at the end of the function.
+//	EDir dir = CheckDirection();
+//	float currentWalkSpeed = maxWalkSpeed;
+//
+//	if (dir == EDir::For) 
+//	{
+//		if (bIsSprinting) 
+//		{
+//			currentWalkSpeed *= 1.5;
+//		}
+//		else 
+//		{
+//			currentWalkSpeed *= 1;
+//		}
+//	}
+//	else if (dir == EDir::Sid)
+//	{
+//		currentWalkSpeed *= 0.75;
+//	}
+//	else if (dir == EDir::Bac)
+//	{
+//		currentWalkSpeed *= 0.5;
+//	}
+//
+//	this->GetCharacterMovement()->MaxWalkSpeed = currentWalkSpeed;
+//}
 
 EDir AMGP_2526Character::CheckDirection() 
 {
@@ -195,14 +191,12 @@ EDir AMGP_2526Character::CheckDirection()
 
 void AMGP_2526Character::StartSprint() 
 {
-	bIsSprinting = true;
-	UE_LOG(LogTemp, Warning, TEXT("%f"), this->GetCharacterMovement()->MaxWalkSpeed);
+	MGPCharacterMovementComponent->bWantsToSprint = true;
 }
 
 void AMGP_2526Character::EndSprint()
 {
-	bIsSprinting = false;
-	UE_LOG(LogTemp, Warning, TEXT("%f"), this->GetCharacterMovement()->MaxWalkSpeed);
+	MGPCharacterMovementComponent->bWantsToSprint = false;
 }
 
 void AMGP_2526Character::StartCrouch() 

@@ -66,7 +66,7 @@ protected:
 public:
 
 	/** Constructor */
-	AMGP_2526Character();	
+	AMGP_2526Character(const FObjectInitializer& ObjectInitializer);
 
 protected:
 
@@ -77,6 +77,8 @@ protected:
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) class UMGPCharacterMovementComponent* MGPCharacterMovementComponent;
+
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
@@ -85,11 +87,6 @@ protected:
 
 	/** Called whenever move is to find what speed to move at **/
 	void FindMovementSpeed();
-
-	bool bIsSprinting = false; //ist falsch
-
-	bool bCanSprint = false;
-
 	
 
 public:
@@ -117,12 +114,6 @@ public:
 
 	UFUNCTION()
 	void EndCrouch();
-
-	UPROPERTY(BlueprintReadWrite, Category = "Movement")
-	float maxWalkSpeed;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Movement")
-	float maxRunSpeed;
 
 	/**Called when Camera Zoom starts **/
 	void OnZoom();
