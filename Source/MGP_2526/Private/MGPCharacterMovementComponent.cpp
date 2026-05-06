@@ -86,15 +86,3 @@ EDir UMGPCharacterMovementComponent::CheckDirection()
 		return EDir::For; //If we -for some reason- fail to find a dir, just keep the player at default speed
 	}
 }
-
-void ParkourFunc() 
-{
-	if (bWantsToParkour && bCanParkour) 
-	{
-		bCanParkour = false;
-		FVector ActorPos = Owner->GetActorLocation();
-		FVector ForwardVector = Owner->GetActorForwardVector();
-
-
-	}
-}
