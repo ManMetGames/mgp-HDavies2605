@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "DirEnum.h"
 #include "MGPCharacterMovementComponent.generated.h"
 
 /**
@@ -26,6 +27,16 @@ public:
 	UPROPERTY(EditDefaultsOnly) float Sprint_MaxWalkSpeed;
 	UPROPERTY(EditDefaultsOnly) float Walk_MaxWalkSpeed;
 
+	AActor* Owner;
+
 protected:
 	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
+
+	float FindMovementSpeedMod();
+
+	EDir CheckDirection();
+
+private:
+	bool bCanSprint = false;
+	float currentWalkSpeed = 0.0f;
 };

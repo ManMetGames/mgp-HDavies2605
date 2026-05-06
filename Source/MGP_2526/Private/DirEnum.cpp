@@ -3,10 +3,3 @@
 
 #include "DirEnum.h"
 
-DirEnum::DirEnum()
-{
-}
-
-DirEnum::~DirEnum()
-{
-}

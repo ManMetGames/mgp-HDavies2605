@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "DirEnum.h"
 #include "MGP_2526Character.generated.h"
+
 
 
 class USpringArmComponent;
@@ -15,13 +17,7 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
-UENUM(BlueprintType)
-enum class EDir : uint8
-{
-	For UMETA(DisplayName = "Forward"),
-	Sid UMETA(DisplayName = "Sides"),
-	Bac UMETA(DisplayName = "Back"),
-};
+
 
 /**
  *  A simple player-controllable third person character
@@ -84,9 +80,6 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-
-	/** Called whenever move is to find what speed to move at **/
-	void FindMovementSpeed();
 	
 
 public:
@@ -98,9 +91,6 @@ public:
 	/** Handles look inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoLook(float Yaw, float Pitch);
-
-	/** Checks the direction the player is heading while moving **/
-	EDir CheckDirection();
 
 	/** Called when sprint starts **/
 	void StartSprint();

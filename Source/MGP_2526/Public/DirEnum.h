@@ -3,13 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DirEnum.generated.h"
 
 /**
  * 
  */
-class MGP_2526_API DirEnum
+
+UENUM(BlueprintType)
+enum class EDir : uint8
 {
-public:
-	DirEnum();
-	~DirEnum();
+	For UMETA(DisplayName = "Forward"),
+	Sid UMETA(DisplayName = "Sides"),
+	Bac UMETA(DisplayName = "Back"),
 };
