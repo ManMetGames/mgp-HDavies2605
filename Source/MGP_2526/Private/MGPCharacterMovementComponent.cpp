@@ -5,16 +5,18 @@
 #include "KismetAnimationLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "DirEnum.h"
+#include "GameFramework/Character.h"
 
 UMGPCharacterMovementComponent::UMGPCharacterMovementComponent()
 {
-	Owner = GetOwner();
 }
 
 void UMGPCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity)
 {
 	Super::OnMovementUpdated(DeltaSeconds, OldLocation, OldVelocity);
 
+	UE_LOG(LogTemp, Warning, TEXT("Mode: %d | WalkSpeed: %f | Walk_Max: %f | Sprint_Max: %f"),
+		MovementMode, MaxWalkSpeed, Walk_MaxWalkSpeed, Sprint_MaxWalkSpeed);
 	float speedModifier = FindMovementSpeedMod();
 
 	//initial speed based on if walking/sprinting
@@ -62,8 +64,9 @@ float UMGPCharacterMovementComponent::FindMovementSpeedMod()
 
 EDir UMGPCharacterMovementComponent::CheckDirection()
 {
-	FVector v = Owner->GetVelocity(); //Should theoretically be attainable in the CMC but cant find a way to access
-	FRotator r = Owner->GetActorRotation();
+	if (!CharacterOwner) return EDir::For;
+	FVector v = Velocity; //Should theoretically be attainable in the CMC but cant find a way to access
+	FRotator r = CharacterOwner->GetActorRotation();
 
 	float MovementDirection = UKismetAnimationLibrary::CalculateDirection(v, r);
 	float AbsMovDir = abs(MovementDirection);

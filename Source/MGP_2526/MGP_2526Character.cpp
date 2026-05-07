@@ -165,9 +165,11 @@ void AMGP_2526Character::DoLook(float Yaw, float Pitch)
 
 void AMGP_2526Character::OnZoom() 
 {
+	CameraBoom->SocketOffset = FVector(50,60,60);
 	bIsZoomed = true;
 }
 void AMGP_2526Character::EndZoom() 
 {
+	CameraBoom->SocketOffset = defaultSocketOffset;
 	bIsZoomed = false;
 }
