@@ -11,7 +11,7 @@
  *
  */
 
-UCLASS(BlueprintType)
+UCLASS()
 class MGP_2526_API UMGPCharacterMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
@@ -24,8 +24,8 @@ public:
 
 	UMGPCharacterMovementComponent();
 
-	UPROPERTY(EditDefaultsOnly) float Sprint_MaxWalkSpeed = 500.0f;
-	UPROPERTY(EditDefaultsOnly) float Walk_MaxWalkSpeed = 300.0f;
+	UPROPERTY(EditDefaultsOnly) float Sprint_MaxWalkSpeed;
+	UPROPERTY(EditDefaultsOnly) float Walk_MaxWalkSpeed;
 
 	AActor* Owner;
 

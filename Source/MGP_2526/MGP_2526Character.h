@@ -23,7 +23,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
  *  A simple player-controllable third person character
  *  Implements a controllable orbiting camera
  */
-UCLASS()
+UCLASS(abstract)
 class AMGP_2526Character : public ACharacter
 {
 	GENERATED_BODY()
@@ -64,9 +64,6 @@ public:
 	/** Constructor */
 	AMGP_2526Character(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement)
-	class UMGPCharacterMovementComponent* MGPCharacterMovementComponent;
-
 protected:
 
 	/** Initialize input action bindings */
@@ -76,7 +73,7 @@ protected:
 
 protected:
 
-	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) class UMGPCharacterMovementComponent* MGPCharacterMovementComponent;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
