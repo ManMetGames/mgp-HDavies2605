@@ -61,7 +61,7 @@ void AMGP_2526Character::BeginPlay()
 	defaultSocketOffset = CameraBoom->SocketOffset;
 	defaultFieldOfView = FollowCamera->FieldOfView;
 
-	//Stores default camera socket offset vector
+	targetSocketOffset = defaultSocketOffset;
 
 }
 
@@ -93,6 +93,13 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	{
 		UE_LOG(LogMGP_2526, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+}
+
+void AMGP_2526Character::Tick(float DeltaTime) 
+{
+	Super::Tick(DeltaTime);
+
+	UpdateCamera(DeltaTime);
 }
 
 void AMGP_2526Character::Move(const FInputActionValue& Value)
@@ -166,8 +173,16 @@ void AMGP_2526Character::DoLook(float Yaw, float Pitch)
 void AMGP_2526Character::OnZoom() 
 {
 	bIsZoomed = true;
+	targetSocketOffset = FVector(60,60,60);
 }
 void AMGP_2526Character::EndZoom() 
 {
 	bIsZoomed = false;
+	targetSocketOffset = defaultSocketOffset;
+}
+
+void AMGP_2526Character::UpdateCamera(float DeltaTime)
+{
+	CameraBoom->SocketOffset = FMath::VInterpTo(CameraBoom->SocketOffset, targetSocketOffset, DeltaTime, 5.0f);
+
 }

@@ -28,6 +28,7 @@ class AMGP_2526Character : public ACharacter
 {
 	GENERATED_BODY()
 
+private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -36,6 +37,8 @@ class AMGP_2526Character : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 	
+	
+
 protected:
 
 	/** Move Input Action */
@@ -70,6 +73,10 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+
+	
 
 protected:
 
@@ -111,12 +118,17 @@ public:
 	/**Called when Camera Zoom ends **/
 	void EndZoom();
 
+	void UpdateCamera(float DeltaTime);
+
 	bool bIsZoomed;
 
 
 	//camera variables
 
 	FVector defaultSocketOffset;
+
+	FVector targetSocketOffset;
+
 	float defaultFieldOfView;
 
 public:
