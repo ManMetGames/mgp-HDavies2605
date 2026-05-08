@@ -22,6 +22,8 @@ public:
 
 	bool bWantsToSprint = false;
 
+	bool bIsZoomed = false;
+
 	UMGPCharacterMovementComponent();
 
 	UPROPERTY(EditDefaultsOnly) float Sprint_MaxWalkSpeed;

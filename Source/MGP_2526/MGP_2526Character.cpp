@@ -172,17 +172,16 @@ void AMGP_2526Character::DoLook(float Yaw, float Pitch)
 
 void AMGP_2526Character::OnZoom() 
 {
-	bIsZoomed = true;
+	MGPCharacterMovementComponent->bIsZoomed = true;
 	targetSocketOffset = FVector(60,60,60);
 }
 void AMGP_2526Character::EndZoom() 
 {
-	bIsZoomed = false;
+	MGPCharacterMovementComponent->bIsZoomed = false;
 	targetSocketOffset = defaultSocketOffset;
 }
 
 void AMGP_2526Character::UpdateCamera(float DeltaTime)
 {
-	CameraBoom->SocketOffset = FMath::VInterpTo(CameraBoom->SocketOffset, targetSocketOffset, DeltaTime, 5.0f);
-
+	CameraBoom->SocketOffset = FMath::VInterpTo(CameraBoom->SocketOffset, targetSocketOffset, DeltaTime, 10.0f);
 }

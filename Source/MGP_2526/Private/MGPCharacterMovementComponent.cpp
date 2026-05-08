@@ -20,7 +20,7 @@ void UMGPCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const
 	//initial speed based on if walking/sprinting
 	if (MovementMode == MOVE_Walking)
 	{
-		if (bWantsToSprint&&bCanSprint)
+		if (bWantsToSprint&&bCanSprint&&!bIsZoomed)
 		{
 			currentWalkSpeed = Sprint_MaxWalkSpeed;
 		}
@@ -35,6 +35,7 @@ void UMGPCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const
 
 float UMGPCharacterMovementComponent::FindMovementSpeedMod()
 {
+	if (bIsZoomed) { return 0.5f;}
 	// Implement a "current walk speed" that can be augmented (walk/run speed with a multiplier based on the direction). Update MaxWalkSpeed at the end of the function.
 	EDir dir = CheckDirection();
 
