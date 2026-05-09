@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "DirEnum.h"
 #include "MGP_2526Character.generated.h"
+
+
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -13,6 +16,8 @@ class UInputAction;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
+
+
 
 /**
  *  A simple player-controllable third person character
@@ -23,6 +28,7 @@ class AMGP_2526Character : public ACharacter
 {
 	GENERATED_BODY()
 
+private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -31,11 +37,9 @@ class AMGP_2526Character : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 	
-protected:
+	
 
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, Category="Input")
-	UInputAction* JumpAction;
+protected:
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -49,23 +53,41 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* SprintAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ZoomAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* CrouchAction;
+
 public:
 
 	/** Constructor */
-	AMGP_2526Character();	
+	AMGP_2526Character(const FObjectInitializer& ObjectInitializer);
 
 protected:
 
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+
+	
+
 protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) class UMGPCharacterMovementComponent* MGPCharacterMovementComponent;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+	
 
 public:
 
@@ -77,13 +99,35 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoLook(float Yaw, float Pitch);
 
-	/** Handles jump pressed inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpStart();
+	/** Called when sprint starts **/
+	void StartSprint();
 
-	/** Handles jump pressed inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpEnd();
+	/** Called when sprint ends **/
+	void EndSprint();
+
+	/** Called when Crouch begins **/
+	void StartCrouch();
+
+	void EndCrouch();
+
+	/**Called when Camera Zoom starts **/
+	void OnZoom();
+
+	/**Called when Camera Zoom ends **/
+	void EndZoom();
+
+	void UpdateCamera(float DeltaTime);
+
+	bool bIsZoomed;
+
+
+	//camera variables
+
+	FVector defaultSocketOffset;
+
+	FVector targetSocketOffset;
+
+	float defaultFieldOfView;
 
 public:
 

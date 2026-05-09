@@ -11,9 +11,14 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "MGP_2526.h"
+#include "KismetAnimationLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "MGPCharacterMovementComponent.h"
 
-AMGP_2526Character::AMGP_2526Character()
+AMGP_2526Character::AMGP_2526Character(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UMGPCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
+	MGPCharacterMovementComponent = Cast<UMGPCharacterMovementComponent>(GetCharacterMovement());
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
@@ -30,7 +35,6 @@ AMGP_2526Character::AMGP_2526Character()
 	// instead of recompiling to adjust them
 	GetCharacterMovement()->JumpZVelocity = 500.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
@@ -50,14 +54,21 @@ AMGP_2526Character::AMGP_2526Character()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AMGP_2526Character::BeginPlay() 
+{
+	Super::BeginPlay();
+
+	defaultSocketOffset = CameraBoom->SocketOffset;
+	defaultFieldOfView = FollowCamera->FieldOfView;
+
+	targetSocketOffset = defaultSocketOffset;
+
+}
+
 void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Move);
@@ -65,11 +76,30 @@ void AMGP_2526Character::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMGP_2526Character::Look);
+
+		// Sprinting
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AMGP_2526Character::StartSprint);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AMGP_2526Character::EndSprint);
+
+		// Crouching
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AMGP_2526Character::StartCrouch);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMGP_2526Character::EndCrouch);
+
+		//Zoom
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Started, this, &AMGP_2526Character::OnZoom);
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Completed, this, &AMGP_2526Character::EndZoom);
 	}
 	else
 	{
 		UE_LOG(LogMGP_2526, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+}
+
+void AMGP_2526Character::Tick(float DeltaTime) 
+{
+	Super::Tick(DeltaTime);
+
+	UpdateCamera(DeltaTime);
 }
 
 void AMGP_2526Character::Move(const FInputActionValue& Value)
@@ -110,6 +140,26 @@ void AMGP_2526Character::DoMove(float Right, float Forward)
 	}
 }
 
+void AMGP_2526Character::StartSprint() 
+{
+	MGPCharacterMovementComponent->bWantsToSprint = true;
+}
+
+void AMGP_2526Character::EndSprint()
+{
+	MGPCharacterMovementComponent->bWantsToSprint = false;
+}
+
+void AMGP_2526Character::StartCrouch() 
+{
+	GetCharacterMovement()->bWantsToCrouch = true;
+}
+void AMGP_2526Character::EndCrouch() 
+{
+	GetCharacterMovement()->bWantsToCrouch = false;
+}
+
+
 void AMGP_2526Character::DoLook(float Yaw, float Pitch)
 {
 	if (GetController() != nullptr)
@@ -120,14 +170,18 @@ void AMGP_2526Character::DoLook(float Yaw, float Pitch)
 	}
 }
 
-void AMGP_2526Character::DoJumpStart()
+void AMGP_2526Character::OnZoom() 
 {
-	// signal the character to jump
-	Jump();
+	MGPCharacterMovementComponent->bIsZoomed = true;
+	targetSocketOffset = FVector(60,60,60);
+}
+void AMGP_2526Character::EndZoom() 
+{
+	MGPCharacterMovementComponent->bIsZoomed = false;
+	targetSocketOffset = defaultSocketOffset;
 }
 
-void AMGP_2526Character::DoJumpEnd()
+void AMGP_2526Character::UpdateCamera(float DeltaTime)
 {
-	// signal the character to stop jumping
-	StopJumping();
+	CameraBoom->SocketOffset = FMath::VInterpTo(CameraBoom->SocketOffset, targetSocketOffset, DeltaTime, 8.0f);
 }
