@@ -106,10 +106,8 @@ public:
 	void EndSprint();
 
 	/** Called when Crouch begins **/
-	UFUNCTION()
 	void StartCrouch();
 
-	UFUNCTION()
 	void EndCrouch();
 
 	/**Called when Camera Zoom starts **/

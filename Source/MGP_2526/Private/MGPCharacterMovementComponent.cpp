@@ -8,6 +8,11 @@
 
 UMGPCharacterMovementComponent::UMGPCharacterMovementComponent()
 {
+}
+
+void UMGPCharacterMovementComponent::BeginPlay() 
+{
+	Super::BeginPlay();
 	Owner = GetOwner();
 }
 
@@ -31,31 +36,29 @@ void UMGPCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const
 	}
 
 	MaxWalkSpeed = currentWalkSpeed * speedModifier;
+		
 }
 
 float UMGPCharacterMovementComponent::FindMovementSpeedMod()
 {
 	if (bIsZoomed) { return 0.5f;}
+
 	// Implement a "current walk speed" that can be augmented (walk/run speed with a multiplier based on the direction). Update MaxWalkSpeed at the end of the function.
 	EDir dir = CheckDirection();
-
-	if (dir == EDir::For)
+	switch (dir) 
 	{
+	case EDir::For:
 		bCanSprint = true;
 		return 1.0f;
-	}
-	else if (dir == EDir::Sid)
-	{
+
+	case EDir::Sid:
 		bCanSprint = false;
 		return 0.75f;
-	}
-	else if (dir == EDir::Bac)
-	{
+
+	case EDir::Bac:
 		bCanSprint = false;
 		return 0.5f;
-	}
-	else 
-	{
+	default:
 		bCanSprint = false;
 		return 1.0f;
 	}
@@ -63,7 +66,13 @@ float UMGPCharacterMovementComponent::FindMovementSpeedMod()
 
 EDir UMGPCharacterMovementComponent::CheckDirection()
 {
-	FVector v = Owner->GetVelocity(); //Should theoretically be attainable in the CMC but cant find a way to access
+	//Check if velocity is above a certain amount, avoids jitter
+	if (Velocity.SizeSquared() < 1.f)
+	{
+		return EDir::For;
+	}
+
+	FVector v = Owner->GetVelocity(); 
 	FRotator r = Owner->GetActorRotation();
 
 	float MovementDirection = UKismetAnimationLibrary::CalculateDirection(v, r);

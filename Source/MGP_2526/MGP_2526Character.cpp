@@ -183,5 +183,5 @@ void AMGP_2526Character::EndZoom()
 
 void AMGP_2526Character::UpdateCamera(float DeltaTime)
 {
-	CameraBoom->SocketOffset = FMath::VInterpTo(CameraBoom->SocketOffset, targetSocketOffset, DeltaTime, 10.0f);
+	CameraBoom->SocketOffset = FMath::VInterpTo(CameraBoom->SocketOffset, targetSocketOffset, DeltaTime, 8.0f);
 }
